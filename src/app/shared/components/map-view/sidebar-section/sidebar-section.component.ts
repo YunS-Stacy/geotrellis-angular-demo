@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, OnChanges, Output } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { LayerService } from '../../../services/layer.service';
 import * as L from 'leaflet';
 import 'leaflet-draw';
+import { HttpClient, HttpParams } from '@angular/common/http';
+
 
 import { LayerCard } from '../../../models/layer-card';
 
@@ -13,7 +14,6 @@ import { LayerCard } from '../../../models/layer-card';
 
 export class SidebarSectionComponent implements OnInit, OnChanges {
   model: string = this.route.snapshot.data['name'];
-  service = this.layerService.getService(this.route.snapshot.data['name']);
 
   action: string;
   @Input() map: L.Map;
@@ -21,6 +21,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
     title: string;
     groupActions: any;
     layerCards: LayerCard[];
+    service: any;
   };
   @Input() mask: any;
   view: L.Rectangle;
@@ -67,7 +68,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
       if (el.hasOwnProperty('mask')) {
         el.mask = view;
         if (el.show === true) {
-          this.service.getLayer(el).subscribe(res => {
+          this.sidebarConfig.service.getLayer(el).subscribe(res => {
             res.setOpacity(el.opacity);
             this.layersMap.set(el.info.name, res);
             if (i === this.sidebarConfig.layerCards.length - 1) {
@@ -82,7 +83,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
           if (el.info.name === 'change-detection') {
             values = this.sidebarConfig.layerCards.filter(pt => pt.info.name === 'creation-render')[0].values;
           }
-          this.service.getSummary(el, values, zoom).subscribe(res => {
+          this.sidebarConfig.service.getSummary(el, values, zoom).subscribe(res => {
             el.summary = res;
             el.expanded = 'summary';
             this.isLoading = false;
@@ -117,7 +118,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
     const lyr = this.layersMap.get(name);
     const el = this.filterByName(name);
     if (show) {
-      this.service.getLayer(el).subscribe(res => {
+      this.sidebarConfig.service.getLayer(el).subscribe(res => {
         (res as L.TileLayer).setOpacity(el.opacity);
         this.layersMap.set(name, res);
         this.layers = Array.from(this.layersMap.values());
@@ -139,7 +140,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
 
   onPaletteChange(name: string, palette: string): void {
     const el = this.filterByName(name);
-    this.service.getLayer(el).subscribe(res => {
+    this.sidebarConfig.service.getLayer(el).subscribe(res => {
       res.setOpacity(el.opacity);
       this.layersMap.set(el.info.name, res);
       this.layers = Array.from(this.layersMap.values());
@@ -148,7 +149,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
 
   onValuesChange(name: string, layer: L.Layer): void {
     const el = this.filterByName(name);
-    this.service.getLayer(el).subscribe(res => {
+    this.sidebarConfig.service.getLayer(el).subscribe(res => {
       res.setOpacity(el.opacity);
       this.layersMap.set(el.info.name, res);
       this.layers = Array.from(this.layersMap.values());
@@ -160,7 +161,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
       if (el.info.name === 'change-detection') {
         values = this.sidebarConfig.layerCards.filter(pt => pt.info.name === 'creation-render')[0].values;
       }
-      this.service.getSummary(el, values, zoom).subscribe(res => {
+      this.sidebarConfig.service.getSummary(el, values, zoom).subscribe(res => {
         el.summary = res;
         el.expanded = 'summary';
         this.isLoading = false;
@@ -169,11 +170,13 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
   }
 
   constructor(
-    private layerService: LayerService,
     private route: ActivatedRoute,
+    private http: HttpClient,
+
   ) {  }
 
   ngOnInit() {
+    this.sidebarConfig.service = this.sidebarConfig.service;
     this.isSingle = (this.sidebarConfig.layerCards && this.sidebarConfig.layerCards.length === 1) ? true : false;
   }
 
@@ -181,7 +184,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
     if (changes.map && changes.map.currentValue !== undefined) {
       const cards = this.sidebarConfig.layerCards.filter(el => el.show === true);
       cards.forEach(el => {
-        this.service.getLayer(el).subscribe(res => {
+        this.sidebarConfig.service.getLayer(el).subscribe(res => {
           (res as L.TileLayer).setOpacity(el.opacity);
           this.layersMap.set(el.info.name, res);
           this.layers = Array.from(this.layersMap.values());
@@ -194,7 +197,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
         if (el.hasOwnProperty('mask')) {
           el.mask = changes.mask.currentValue;
           if (el.show === true) {
-            this.service.getLayer(el).subscribe(res => {
+            this.sidebarConfig.service.getLayer(el).subscribe(res => {
               res.setOpacity(el.opacity);
               this.layersMap.set(el.info.name, res);
               if (i === this.sidebarConfig.layerCards.length - 1) {
@@ -209,7 +212,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
             if (el.info.name === 'change-detection') {
               values = this.sidebarConfig.layerCards.filter(pt => pt.info.name === 'creation-render')[0].values;
             }
-            this.service.getSummary(el, values, zoom).subscribe(res => {
+            this.sidebarConfig.service.getSummary(el, values, zoom).subscribe(res => {
               el.summary = res;
               el.expanded = 'summary';
               this.isLoading = false;
@@ -227,7 +230,7 @@ export class SidebarSectionComponent implements OnInit, OnChanges {
         if (el.expanded === 'summary') {
           el.expanded = undefined;
         }
-        this.service.getLayer(el).subscribe(res => {
+        this.sidebarConfig.service.getLayer(el).subscribe(res => {
           (res as L.TileLayer).setOpacity(el.opacity);
           this.layersMap.set(el.info.name, res);
           this.layers = Array.from(this.layersMap.values());

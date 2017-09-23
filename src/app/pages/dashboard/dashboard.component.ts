@@ -5,7 +5,8 @@ import { Demo } from '../../shared/models/demo.d';
 
 @Component({
   selector: 'gd-dashboard',
-  templateUrl: './dashboard.component.html'
+  templateUrl: './dashboard.component.html',
+  providers: [ DemoService ]
 })
 export class DashboardComponent implements OnInit {
   @HostBinding('class.dashboard') true;

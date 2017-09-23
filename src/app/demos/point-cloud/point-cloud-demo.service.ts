@@ -8,24 +8,12 @@ import { LayerCard } from '../../shared/models/layer-card.d';
 
 import * as L from 'leaflet';
 import { POINTCLOUDDEMO } from './point-cloud-demo';
+import { DemoService } from '../../shared/models/demo.service';
+
 @Injectable()
 export class PointCloudDemoService {
-
-  constructor(
-    private http: HttpClient,
-  ) { }
-
-  getMapConfig(): Promise<{
-    zoom: number;
-    center: number[];
-    baseLayer: L.TileLayer[];
-  }> {
-    return Promise.resolve({
-      zoom: POINTCLOUDDEMO.zoom,
-      center: POINTCLOUDDEMO.center,
-      baseLayer: POINTCLOUDDEMO.baseLayer
-    });
-  }
+  demoConfig: any;
+  sidebarConfig: any;
 
   getLayer(card: LayerCard): Observable<L.TileLayer> {
     switch (card.info.name) {
@@ -111,5 +99,16 @@ export class PointCloudDemoService {
             .map(res => res);
         }
     }
+  }
+
+  constructor(
+    private http: HttpClient,
+  ) {
+    this.demoConfig = new DemoService(POINTCLOUDDEMO).demoConfig;
+    this.sidebarConfig = new DemoService(POINTCLOUDDEMO).sidebarConfig;
+    this.sidebarConfig.service = {
+      getLayer: this.getLayer,
+      getSummary: this.getSummary
+    };
   }
 }

@@ -26,9 +26,9 @@ export class LayerCardComponent implements OnInit, OnChanges, AfterViewInit {
 
   @Input() isSingle: boolean;
   @Input() isLoading: boolean;
-  components = {
-    info: (InfoPanelComponent as Type<any>),
-  };
+  // components = {
+  //   info: (InfoPanelComponent as Type<any>),
+  // };
   name: string;
   title: string;
   presets: any[];
@@ -93,32 +93,31 @@ export class LayerCardComponent implements OnInit, OnChanges, AfterViewInit {
       this.valuesChange.emit(valArray);
     }
   }
+  // test dynamic load, seems not support @Input, @Output
+  // loadComponents() {
+  //   Object.keys(this.layerActions).forEach(el => {
+  //     console.log(el, 'layerActions');
+  //     el = 'info';
+  //     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.components[`${el}`]);
 
-  loadComponents() {
-    Object.keys(this.layerActions).forEach(el => {
-      console.log(el, 'layerActions');
-      el = 'info';
-      const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.components[`${el}`]);
+  //     const viewContainerRef = this.gdHost.viewContainerRef;
+  //     viewContainerRef.clear();
 
-      const viewContainerRef = this.gdHost.viewContainerRef;
-      viewContainerRef.clear();
-
-      const componentRef = viewContainerRef.createComponent(componentFactory);
-      (<HostComponent>componentRef.instance).expanded = this.expanded;
-      switch (el) {
-        case 'info':
-        if (this.palette) {
-          (<HostComponent>componentRef.instance).data = Object.assign(this.layerActions[`${el}`], {
-            palette: this.palette,
-          });
-        }
-          break;
-        default:
-          break;
-      }
-
-    });
-  }
+  //     const componentRef = viewContainerRef.createComponent(componentFactory);
+  //     (<HostComponent>componentRef.instance).expanded = this.expanded;
+  //     switch (el) {
+  //       case 'info':
+  //       if (this.palette) {
+  //         (<HostComponent>componentRef.instance).data = Object.assign(this.layerActions[`${el}`], {
+  //           palette: this.palette,
+  //         });
+  //       }
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   });
+  // }
 
   ngOnInit() {
     this.name = this.info.name;
@@ -145,6 +144,6 @@ export class LayerCardComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.loadComponents();
+    // this.loadComponents();
   }
 }

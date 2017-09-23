@@ -1,9 +1,6 @@
-import 'rxjs/add/operator/switchMap';
-
 import { Component, Input, ChangeDetectorRef, HostBinding, AfterViewInit, OnInit } from '@angular/core';
 
 import { LayerCard } from '../../models/layer-card.d';
-import { LayerService } from '../../services/layer.service';
 
 import * as L from 'leaflet';
 
@@ -14,20 +11,18 @@ import * as L from 'leaflet';
 
 export class MapViewComponent implements OnInit, AfterViewInit {
   @HostBinding('class.map-view') true;
-  @Input() cards: LayerCard[] = [];
-  @Input() groupActions: any = {};
   @Input() demoConfig: {
-    title: string;
     zoom: number;
     center: number[];
     layers: L.TileLayer[];
   };
-  @Input() title: string;
   @Input() sidebarConfig: {
     title: string;
     groupActions: any;
     layerCards: LayerCard[];
+    service: any;
   };
+  cards: LayerCard[] = [];
   hasMask = false;
   map: L.Map;
   mask: any;
@@ -37,7 +32,6 @@ export class MapViewComponent implements OnInit, AfterViewInit {
     center: undefined,
     zoomControl: false
   };
-
   resetArea(): void {
     this.map.eachLayer(el => {
       if (el.hasOwnProperty('editing')) {
@@ -60,11 +54,7 @@ export class MapViewComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this.options = Object.assign({}, this.options, {
-      zoom: this.demoConfig.zoom,
-      center: this.demoConfig.center,
-      layers: this.demoConfig.layers,
-    });
+    Object.assign(this.options, this.demoConfig);
   }
   ngAfterViewInit() {
     this.cd.detectChanges();

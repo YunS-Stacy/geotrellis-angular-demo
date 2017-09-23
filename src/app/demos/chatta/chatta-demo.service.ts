@@ -8,26 +8,14 @@ import { LayerCard } from '../../shared/models/layer-card.d';
 
 import * as L from 'leaflet';
 import { CHATTADEMO } from './chatta-demo';
+import { DemoService } from '../../shared/models/demo.service';
+
 @Injectable()
 export class ChattaDemoService {
+  demoConfig: any;
+  sidebarConfig: any;
 
-  constructor(
-    private http: HttpClient,
-  ) { }
-
-  getMapConfig(): Promise<{
-    zoom: number;
-    center: number[];
-    baseLayer: L.TileLayer[];
-  }> {
-    return Promise.resolve({
-      zoom: CHATTADEMO.zoom,
-      center: CHATTADEMO.center,
-      baseLayer: CHATTADEMO.baseLayer
-    });
-  }
-
-  getLayer(card: LayerCard): Observable<L.TileLayer> {
+  getLayer = (card: LayerCard) => {
     return this.http.get(`https://cors-anywhere.herokuapp.com/http://demo.geotrellis.com/chatta/gt/breaks`, {
       params: new HttpParams()
         .set('layers', `${card.params.layers}`)
@@ -51,7 +39,7 @@ export class ChattaDemoService {
       });
   }
 
-  getSummary(card: LayerCard, values: string[] | number[], zoom: number): Observable<any> {
+  getSummary = (card: LayerCard, values: string[] | number[], zoom: number) => {
     const mask = card.mask;
     return this.http.get(`https://cors-anywhere.herokuapp.com/http://demo.geotrellis.com/chatta/gt/sum`, {
       params: new HttpParams()
@@ -71,5 +59,16 @@ export class ChattaDemoService {
         };
       }
     );
+  }
+
+  constructor(
+    private http: HttpClient,
+  ) {
+    this.demoConfig = new DemoService(CHATTADEMO).demoConfig;
+    this.sidebarConfig = new DemoService(CHATTADEMO).sidebarConfig;
+    this.sidebarConfig.service = {
+      getLayer: this.getLayer,
+      getSummary: this.getSummary
+    };
   }
 }

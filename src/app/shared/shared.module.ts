@@ -11,14 +11,13 @@ import { MapWrapperDirective } from './directives/map-wrapper.directive';
 import { ActionBtnDirective } from './directives/action-btn.directive';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
-import { LayerService } from './services/layer.service';
 import { LmDemoService } from '../demos/lm/lm-demo.service';
 import { ChattaDemoService } from '../demos/chatta/chatta-demo.service';
 import { PointCloudDemoService } from '../demos/point-cloud/point-cloud-demo.service';
 import { PotsdamDemoService } from '../demos/potsdam/potsdam-demo.service';
 import { InfoPanelComponent } from './components/map-view/sidebar-section/layer-card/layer-action/info-panel/info-panel.component';
 
-import { HostDirective } from './directives/host.directive';
+// import { HostDirective } from './directives/host.directive';
 
 @NgModule({
   imports: [
@@ -40,7 +39,7 @@ import { HostDirective } from './directives/host.directive';
     MapWrapperDirective,
     ActionBtnDirective,
     InfoPanelComponent,
-HostDirective,
+    // HostDirective,
   ],
   exports: [
     MapViewComponent
@@ -50,11 +49,7 @@ HostDirective,
   ],
 
   providers: [
-    LayerService,
-    LmDemoService,
-    ChattaDemoService,
-    PointCloudDemoService,
-    PotsdamDemoService
+
   ],
   bootstrap: [
     MapViewComponent
